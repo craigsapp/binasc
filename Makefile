@@ -41,7 +41,7 @@ COMPILER = LANG=C $(ENV) g++ $(ARCH)
 # Windows programs in linux OSes.  Uncomment the following line to select
 # the MinGW compiler (usually different with different installations, 
 # so the path and name of the compiler will need to be adjusted):
-COMPILER = /usr/i686-pc-linux-gnu/i686-pc-mingw32/gcc-bin/4.7.2/i686-pc-mingw32-g++ -static
+# COMPILER = /usr/i686-pc-linux-gnu/i686-pc-mingw32/gcc-bin/4.7.2/i686-pc-mingw32-g++ -static
 
 
 CPP = binasc.cpp Options.cpp Options_private.cpp FileIO.cpp
