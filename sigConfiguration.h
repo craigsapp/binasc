@@ -1,15 +1,17 @@
 //
+// Copyright 1997 by Craig Stuart Sapp, All Rights Reserved.
 // Programmer:    Craig Stuart Sapp <craig@ccrma.stanford.edu>
 // Creation Date: Mon Dec  1 18:16:57 GMT-0800 1997
 // Last Modified: Mon Dec  1 18:16:57 GMT-0800 1997
-// Filename:      ...sig/code/misc/sigConfiguration.h
+// Filename:      ...sig/maint/code/misc/sigConfiguration.h
+// Web Address:   http://sig.sapp.org/include/sig/sigConfiguration.h
 // Syntax:        C 
 //
 // Description:  This file defines flags for different code setups: 
-//	You specify the OS in a compiler flag and this file takes care
-//	of the rest of the defines for that OS.  This file should
-//	automatically be included in any file which uses any of the 
-//	define flags below.
+//	         You specify the OS in a compiler flag and this file takes care
+//	         of the rest of the defines for that OS.  This file should
+//         	 automatically be included in any file which uses any of the 
+//	         define flags below.
 //
 // OS setup defines to use in compiling files:
 //
@@ -66,6 +68,14 @@
    #define INTEL
 #endif
 
+#ifdef OSXOLD
+   #define MOTOROLA
+#endif
+
+#ifdef OSXPC
+   #define INTEL
+#endif
+
 
 #ifdef SUN
    #define SHORTRAND
@@ -91,7 +101,8 @@
 
 
 
-#endif  // _SIGCONFIGURATION_H_INCLUDED
+#endif  /* _SIGCONFIGURATION_H_INCLUDED */
 
 
 
+// md5sum: 32f74a7c264b158b83ff38db1ea885f8 sigConfiguration.h [20030102]

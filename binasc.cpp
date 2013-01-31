@@ -704,7 +704,7 @@ void processDecimalWord(const char* word, int lineNumber, FileIO& out) {
       } else {
          ulong tempLong = (ulong)atoi(&word[quoteIndex + 1]);
          uchar ucharOutput = (uchar)tempLong;
-         if (tempLong > 255 || tempLong < 0) {
+         if (tempLong > 255) {  // or if (tempLong < 0) but already unsigned
             cerr << "Error on line " << lineNumber << " at token: " << word 
                  << endl;
             cerr << "Decimal number out of range from 0 to 255" << endl;
