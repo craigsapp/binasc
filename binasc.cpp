@@ -4,6 +4,7 @@
 // Last Modified: Mon Jan 19 02:41:56 GMT-0800 1998
 // Last Modified: Thu Oct 22 16:47:41 PDT 1998
 // Last Modified: Wed Jan 30 13:22:18 PST 2013 Added VLV compiling
+// Last Midified: Fri Feb  1 15:14:14 PST 2013
 // Filename:      binasc.cpp
 // Syntax:        C++
 //
