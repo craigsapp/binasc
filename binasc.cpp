@@ -383,7 +383,7 @@ void outputStyleBoth(istream& infile) {
 void processLine(char* inputLine, int lineCount, FileIO& out) {
    char* word = strtok(inputLine, WORD_SEPARATORS);
    while (word != NULL) {
-      if ((word[0] == ';') || (word[0] == ';')) {
+      if ((word[0] == ';') || (word[0] == '#')) {
          return;
       }
       if (word[0] == '+') {
