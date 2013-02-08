@@ -9,6 +9,8 @@
 // Syntax:        C++
 //
 
+using namespace std;
+
 #include <ctype.h>     
 #include <string.h>
 #include "Options.h"
@@ -28,12 +30,12 @@ FileIO  outputCompiled;     // output for compilation
 
 // function declarations:
 void checkOptions            (Options& opts);
-void compileFile             (const char* filename);
+void compileFile             (istream& infile);
 void example                 (void);
 void manual                  (void);
-void outputStyleAscii        (const char* filename);
-void outputStyleBinary       (const char* filename);
-void outputStyleBoth         (const char* filename);
+void outputStyleAscii        (istream& infile);
+void outputStyleBinary       (istream& infile);
+void outputStyleBoth         (istream& infile);
 void processAsciiWord        (const char* word, int lineNumber, FileIO& out);
 void processBinaryWord       (const char* word, int lineNumber, FileIO& out);
 void processDecimalWord      (const char* word, int lineNumber, FileIO& out);
@@ -49,17 +51,36 @@ void usage                   (const char* command);
 int main(int argc, char* argv[]) {
    options.setOptions(argc, argv);
    checkOptions(options);
+   ifstream infile;
+   istream* input;
+   const char* filename;
    
-   for (int i=0; i<options.getArgCount(); i++) {
-      if (options.getBoolean("compile")) {
-         compileFile(options.getArg(i+1));
-      } else if (options.getBoolean("binary")) {
-         outputStyleBinary(options.getArg(i+1));
-      } else if (options.getBoolean("ascii")) {
-         outputStyleAscii(options.getArg(i+1));
+   for (int i=0; i==0 || i<=options.getArgCount(); i++) {
+      if (i == 0) {
+         input = &cin;
       } else {
-         outputStyleBoth(options.getArg(i+1));
+         filename = options.getArg(i);
+         if (!infile.is_open()) {
+            cerr << "Error opening file: " << filename << endl;
+            exit(1);
+         }
+         input = &infile;
       }
+      
+      if (options.getBoolean("compile")) {
+         compileFile(*input);
+      } else if (options.getBoolean("binary")) {
+         outputStyleBinary(*input);
+      } else if (options.getBoolean("ascii")) {
+         outputStyleAscii(*input);
+      } else {
+         outputStyleBoth(*input);
+      }
+
+      if (input == &infile) {
+         infile.close();
+      }
+
    }
 
    return 0;
@@ -90,7 +111,7 @@ void checkOptions(Options& opts) {
 
    if (opts.getBoolean("a") + opts.getBoolean("b") +
          opts.getBoolean("c") > 1) {
-      cerr << "Error: only one of the opts -a, -b, or -c can be used"
+      cerr << "Error: only one of the options -a, -b, or -c can be used"
               "at one time." << endl;
       usage(opts.getCommand());
       exit(1);
@@ -102,7 +123,7 @@ void checkOptions(Options& opts) {
       exit(0);
    }
    if (opts.getBoolean("version")) {
-      cout << "last edited: Thu Oct 22 14:17:23 PDT 1998 " << endl;
+      cout << "last edited: Thu Feb  7 21:29:39 PST 2013" << endl;
       cout << "compiled:    " << __DATE__ << endl;
       exit(0);
    }
@@ -126,13 +147,6 @@ void checkOptions(Options& opts) {
       exit(1);
    }
 
-   if (opts.getArgCount() < 1) {
-      cerr << "Error: you must specify at least one file on the command-line"
-           << endl;
-      usage(opts.getCommand());
-      exit(1);
-   }
-
    if (strlen(opts.getString("compile")) > 0) {
       outputCompiled.open(opts.getString("compile"), ios::out);
       if (!outputCompiled.is_open()) {
@@ -152,16 +166,10 @@ void checkOptions(Options& opts) {
 //     specified as numbers into output stream.
 //
 
-void compileFile(const char* filename) {
+void compileFile(istream& infile) {
    char     inputLine[1024] = {0};    // current line being processed
    int      lineCount = 0;            // count current line being processed
-   ifstream infile;                   // file to be read from
 
-   infile.open(filename);
-   if (!infile.is_open()) {
-      cerr << "Error opening file: " << filename << endl;
-      exit(1);
-   }
 
    if (!outputCompiled.is_open()) {
       cerr << "Error: output file was not opened" << endl;
@@ -175,7 +183,11 @@ void compileFile(const char* filename) {
       infile.getline(inputLine, 1024, '\n');
       lineCount++;
    }
-   infile.close();   
+
+   // handle cases where there is no newline at the end of a file:
+   if (infile.gcount() > 0) {
+      processLine(inputLine, lineCount, outputCompiled);
+   }
 }
 
 
@@ -207,7 +219,7 @@ void example(void) {
 //    broken unless they are longer than 75 characters.
 //
 
-void outputStyleAscii (const char* filename) {
+void outputStyleAscii (istream& infile) {
    uchar outputWord[256] = {0};   // storage for current word
    int index = 0;                 // current length of word
    int lineCount = 0;             // current length of line
@@ -219,14 +231,6 @@ void outputStyleAscii (const char* filename) {
    uchar ch;                      // current input byte
    int type = 0;                  // 0=space, 1=printable
    int lastType = 0;              // 0=space, 1=printable
-   ifstream infile;               // file to be read from
-
-
-   infile.open(filename);
-   if (!infile.is_open()) {
-      cerr << "Error opening file: " << filename << endl;
-      exit(1);
-   }
 
    infile.read((char*)&ch, 1);
    while (!infile.eof()) {
@@ -267,8 +271,6 @@ void outputStyleAscii (const char* filename) {
    if (index != 0) {
       cout << endl;
    }
-
-   infile.close();
 }
 
 
@@ -279,7 +281,7 @@ void outputStyleAscii (const char* filename) {
 //     hexadecimal numbers only.
 //
 
-void outputStyleBinary(const char* filename) {
+void outputStyleBinary(istream& infile) {
    uchar outputLine[256] = {0};   // storage for output line
    int maxByteInLine = options.getInt("mod"); // max line length for output
    if (maxByteInLine < 1) {
@@ -288,13 +290,6 @@ void outputStyleBinary(const char* filename) {
    }
    int currentByte = 0;           // current byte output in line
    uchar ch;                      // current input byte
-   ifstream infile;               // file to be read from
-
-   infile.open(filename);
-   if (!infile.is_open()) {
-      cerr << "Error opening file: " << filename << endl;
-      exit(1);
-   }
 
    infile.read((char*)&ch, 1);
 
@@ -318,7 +313,6 @@ void outputStyleBinary(const char* filename) {
    if (currentByte != 0) {
       cout << endl;
    }
-   infile.close();
 }
    
 
@@ -329,7 +323,7 @@ void outputStyleBinary(const char* filename) {
 //     with both hexadecimal numbers and ascii representation
 //
 
-void outputStyleBoth(const char* filename) {
+void outputStyleBoth(istream& infile) {
    uchar asciiLine[256] = {0};    // storage for output line
    int maxByteInLine = options.getInt("mod"); // max line length for output
    if (maxByteInLine < 1) {
@@ -339,14 +333,7 @@ void outputStyleBoth(const char* filename) {
    int currentByte = 0;           // current byte output in line
    int index = 0;                 // current character in asciiLine
    uchar ch;                      // current input byte
-   ifstream infile;               // file to be read from
  
-   infile.open(filename);
-   if (!infile.is_open()) {
-      cerr << "Error opening file: " << filename << endl;
-      exit(1);
-   }
-
    infile.read((char*)&ch, 1);
    while (!infile.eof()) {
       if (index == 0) {
@@ -382,8 +369,6 @@ void outputStyleBoth(const char* filename) {
       asciiLine[index] = '\0';
       cout << asciiLine << '\n' << endl;
    }
-
-   infile.close();
 }
    
 
@@ -398,7 +383,7 @@ void outputStyleBoth(const char* filename) {
 void processLine(char* inputLine, int lineCount, FileIO& out) {
    char* word = strtok(inputLine, WORD_SEPARATORS);
    while (word != NULL) {
-      if (word[0] == ';') {
+      if ((word[0] == ';') || (word[0] == ';')) {
          return;
       }
       if (word[0] == '+') {
