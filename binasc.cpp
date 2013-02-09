@@ -54,12 +54,14 @@ int main(int argc, char* argv[]) {
    ifstream infile;
    istream* input;
    const char* filename;
+   int filecount = options.getArgCount();
    
-   for (int i=0; i==0 || i<=options.getArgCount(); i++) {
-      if (i == 0) {
+   for (int i=0; i<filecount || i==0; i++) {
+      if (filecount == 0) {
          input = &cin;
       } else {
-         filename = options.getArg(i);
+         filename = options.getArg(i+1);
+         infile.open(filename, ios::binary);
          if (!infile.is_open()) {
             cerr << "Error opening file: " << filename << endl;
             exit(1);
