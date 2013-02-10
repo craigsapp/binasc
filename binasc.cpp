@@ -4,29 +4,33 @@
 // Last Modified: Mon Jan 19 02:41:56 GMT-0800 1998
 // Last Modified: Thu Oct 22 16:47:41 PDT 1998
 // Last Modified: Wed Jan 30 13:22:18 PST 2013 Added VLV compiling
-// Last Midified: Fri Feb  1 15:14:14 PST 2013
+// Last Modified: Sat Feb  9 22:30:18 PST 2013 Added MIDI parsing
 // Filename:      binasc.cpp
 // Syntax:        C++
 //
 
 using namespace std;
 
-#include <ctype.h>     
-#include <string.h>
-#include "Options.h"
-#include "FileIO.h"
-
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <sstream>
 
-typedef unsigned char uchar;
+#include <ctype.h>     
+#include <string.h>
+
+#include "Options.h"
+#include "FileIO.h"
+
+typedef unsigned char  uchar;
 typedef unsigned short ushort;
-typedef unsigned long ulong;
+typedef unsigned long  ulong;
 
 // global variables:
-Options options;            // command-line options
-FileIO  outputCompiled;     // output for compilation
+Options options;             // command-line options
+int     midiQ    = 0;        // used with --midi option
+int     commentQ = 1;        // used with --midi option
+FileIO  outputCompiled;      // output for compilation
 
 // function declarations:
 void checkOptions            (Options& opts);
@@ -36,6 +40,7 @@ void manual                  (void);
 void outputStyleAscii        (istream& infile);
 void outputStyleBinary       (istream& infile);
 void outputStyleBoth         (istream& infile);
+void outputStyleMidiFile     (istream& infile);
 void processAsciiWord        (const char* word, int lineNumber, FileIO& out);
 void processBinaryWord       (const char* word, int lineNumber, FileIO& out);
 void processDecimalWord      (const char* word, int lineNumber, FileIO& out);
@@ -44,6 +49,11 @@ void processVlvWord          (const char* word, int lineNumber, FileIO& out);
 void processMidiPitchBendWord(const char* word, int lineNumber, FileIO& out);
 void processLine             (char* word, int lineNumber, FileIO& out);
 void usage                   (const char* command);
+
+// MIDI parsing functions:
+int  readEvent               (ostream& out, istream& infile, int& trackbytes, 
+                              int& command);
+int  getVLV                  (istream& infile, int& trackbytes);
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -75,6 +85,8 @@ int main(int argc, char* argv[]) {
          outputStyleBinary(*input);
       } else if (options.getBoolean("ascii")) {
          outputStyleAscii(*input);
+      } else if (options.getBoolean("midi")) {
+         outputStyleMidiFile(*input);
       } else {
          outputStyleBoth(*input);
       }
@@ -102,9 +114,11 @@ void checkOptions(Options& opts) {
    opts.define("a|ascii=b");
    opts.define("b|binary=b");
    opts.define("c|compile=s:");
-   opts.define("m|man|manual=b");
+   opts.define("h|manual=b");
+   opts.define("m|midi=b");
    opts.define("mod=i:25");
    opts.define("wrap=i:75");              // for -a option
+
    opts.define("author=b");
    opts.define("version=b");
    opts.define("example=b");
@@ -137,10 +151,14 @@ void checkOptions(Options& opts) {
       example();
       exit(0);
    }
-   if (opts.getBoolean("manual")) {
+   if (opts.getBoolean("help")) {
       manual();
       exit(0);
    }
+   if (opts.getBoolean("midi")) {
+      midiQ = 1;
+   }
+ 
 
    
    if (opts.getBoolean("compile") && strlen(opts.getString("compile")) == 0) {
@@ -372,7 +390,337 @@ void outputStyleBoth(istream& infile) {
       cout << asciiLine << '\n' << endl;
    }
 }
+
+
+
+//////////////////////////////
+//
+// outputStyleMidiFile -- read an input file and output bytes parsed
+//     as a MIDI file (exit with error if not a MIDI file.
+//
+
+void outputStyleMidiFile(istream& infile) {
+   uchar outputLine[256] = {0};   // storage for output line
+   int currentByte = 0;           // current byte output in line
+   uchar ch;                      // current input byte
+
+   stringstream out;
+
+   infile.read((char*)&ch, 1);
+
+   if (infile.eof()) {
+      cerr << "End of the file right away!" << endl; 
+   }
+
+   // Read the MIDI file header
+
+   // The first four bytes must be the characters "MThd"
+   if (ch != 'M') { cerr << "Not a MIDI file M" << endl; exit(1); }
+   infile.read((char*)&ch, 1);
+   if (ch != 'T') { cerr << "Not a MIDI file T" << endl; exit(1); }
+   infile.read((char*)&ch, 1);
+   if (ch != 'h') { cerr << "Not a MIDI file h" << endl; exit(1); }
+   infile.read((char*)&ch, 1);
+   if (ch != 'd') { cerr << "Not a MIDI file d" << endl; exit(1); }
+   out << "+M +T +h +d";
+   if (commentQ) {
+      out << "\t\t; MIDI header chunk marker";
+   }
+   out << endl;
+
+   // The next four bytes are a big-endian byte count for the header
+   // which should nearly always be "6"
+   int headersize = 0;
+   infile.read((char*)&ch, 1); headersize = (headersize << 8) | ch;
+   infile.read((char*)&ch, 1); headersize = (headersize << 8) | ch;
+   infile.read((char*)&ch, 1); headersize = (headersize << 8) | ch;
+   infile.read((char*)&ch, 1); headersize = (headersize << 8) | ch;
+   out << "4'" << headersize;
+   if (commentQ) {
+      out << "\t\t\t; bytes to follow in header chunk";
+   }
+   out << endl;
+
+   // first number in header is two-byte file type
+   int filetype = 0;
+   infile.read((char*)&ch, 1);
+   filetype = (filetype << 8) | ch;
+   infile.read((char*)&ch, 1);
+   filetype = (filetype << 8) | ch;
+   out << "2'" << filetype;
+   if (commentQ) {
+      out << "\t\t\t; file format: Type-" << filetype << " (";
+      switch (filetype) {
+         case 0:  out << "single track"; break;
+         case 1:  out << "multitrack";   break;
+         case 2:  out << "multisegment"; break;
+         default: out << "unknown";      break;
+      }
+      out << ")";
+   }
+   out << endl;
+
+   // second number in header is two-byte trackcount
+   int trackcount = 0;
+   infile.read((char*)&ch, 1);
+   trackcount = (trackcount << 8) | ch;
+   infile.read((char*)&ch, 1);
+   trackcount = (trackcount << 8) | ch;
+   out << "2'" << trackcount;
+   if (commentQ) {
+      out << "\t\t\t; number of tracks";
+   }
+   out << endl;
    
+   // third number is divisions.  This can be one of two types:
+   // regular: top bit is 0: number of ticks per quarter note
+   // SMPTE:   top bit is 1: first byte is negative frames, second is
+   //          ticks per frame.
+   uchar byte1;
+   uchar byte2;
+   infile.read((char*)&byte1, 1);
+   infile.read((char*)&byte2, 1);
+   if (byte1 & 0x80) {
+      // SMPTE divisions
+      out << "1'-" << 0xff - (uint)byte1 + 1;
+      if (commentQ) {
+         out << "\t\t\t; SMPTE frames/second";
+      }
+      out << endl;
+      out << "1'" << dec << (int)byte2;
+      if (commentQ) {
+         out << "\t\t\t; subframes per frame";
+      }
+      out << endl;
+   } else {
+      // regular divisions
+      int divisions = 0;
+      divisions = (divisions << 8) | byte1;
+      divisions = (divisions << 8) | byte2;
+      out << "2'" << divisions;
+      if (commentQ) {
+         out << "\t\t\t; ticks per quarter note";
+      }
+      out << endl;
+   }   
+   
+   // print any strange bytes in header:
+   int i;
+   for (i=0; i<headersize - 6; i++) {
+      infile.read((char*)&ch, 1);
+      if (ch < 0x10) {
+         out << '0';
+      }
+      out << hex << (int)ch;
+   }
+   if (headersize - 6 > 0) {
+      out << "\t\t\t; unknown header bytes";
+      out << endl;
+   }
+
+   int trackbytes;
+   for (i=0; i<trackcount; i++) {
+      out << "\n; TRACK " << i << " ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;" << endl;
+
+      infile.read((char*)&ch, 1);
+      // The first four bytes of a track must be the characters "MTrk"
+      if (ch != 'M') { cerr << "Not a MIDI file M2" << endl; exit(1); }
+      infile.read((char*)&ch, 1);
+      if (ch != 'T') { cerr << "Not a MIDI file T2" << endl; exit(1); }
+      infile.read((char*)&ch, 1);
+      if (ch != 'r') { cerr << "Not a MIDI file r" << endl; exit(1); }
+      infile.read((char*)&ch, 1);
+      if (ch != 'k') { cerr << "Not a MIDI file k" << endl; exit(1); }
+      out << "+M +T +r +k";
+      if (commentQ) {
+         out << "\t\t; MIDI track chunk marker";
+      }
+      out << endl;
+
+      // The next four bytes are a big-endian byte count for the track
+      int tracksize = 0;
+      infile.read((char*)&ch, 1); tracksize = (tracksize << 8) | ch;
+      infile.read((char*)&ch, 1); tracksize = (tracksize << 8) | ch;
+      infile.read((char*)&ch, 1); tracksize = (tracksize << 8) | ch;
+      infile.read((char*)&ch, 1); tracksize = (tracksize << 8) | ch;
+      out << "4'" << tracksize;
+      if (commentQ) {
+         out << "\t\t\t; bytes to follow in track chunk";
+      }
+      out << endl;
+
+      trackbytes = 0;
+      int command = 0;
+   
+      // process MIDI events until the end of the track
+      while (readEvent(out, infile, trackbytes, command)) { out << "\n"; };
+      out << "\n";
+  
+      if (trackbytes != tracksize) {
+         out << "; TRACK SIZE ERROR, ACTUAL SIZE: " << trackbytes << endl;
+      }      
+   }
+
+   // print #define definitions if requested.
+
+
+   // print main content of MIDI file parsing:
+   cout << out.str() << endl;
+
+}
+   
+
+
+//////////////////////////////
+//
+// readEvent -- read a delta time and then a MIDI message (or meta message).
+//     returns 1 if not end-of-track meta message; 0 otherwise.
+//
+
+int readEvent(ostream& out, istream& infile, int& trackbytes, int& command) {
+   // read and print Variable Length Value for delta ticks
+   int vlv = getVLV(infile, trackbytes);
+   out << "v" << dec << vlv << "\t";
+  
+   char byte1, byte2;
+   uchar ch;
+   infile.read((char*)&ch, 1);
+   trackbytes++;
+   if (ch < 0x80) {
+      // running status: command byte is previous one in data stream
+      out << "   ";
+   } else {
+      // midi command byte
+      out << hex << (int)ch;
+      command = ch;
+      infile.read((char*)&ch, 1);
+      trackbytes++;
+   }
+   byte1 = ch;
+   int count;
+   int i;
+   int metatype = 0;
+   switch (command & 0xf0) {
+      case 0x80:    // note-off: 2 bytes
+         out << " '" << dec << (int)byte1;
+         infile.read((char*)&ch, 1);
+         trackbytes++;
+         byte2 = ch;
+         out << " '" << dec << (int)byte2;
+         break;
+      case 0x90:    // note-on: 2 bytes
+         out << " '" << dec << (int)byte1;
+         infile.read((char*)&ch, 1);
+         trackbytes++;
+         byte2 = ch;
+         out << " '" << dec << (int)byte2;
+         break;
+      case 0xA0:    // aftertouch: 2 bytes
+         out << " '" << dec << (int)byte1;
+         infile.read((char*)&ch, 1);
+         trackbytes++;
+         byte2 = ch;
+         out << " '" << dec << (int)byte2;
+         break;
+      case 0xB0:    // continuous controller: 2 bytes
+         out << " '" << dec << (int)byte1;
+         infile.read((char*)&ch, 1);
+         trackbytes++;
+         byte2 = ch;
+         out << " '" << dec << (int)byte2;
+         break;
+      case 0xE0:    // pitch-bend: 2 bytes
+         out << " '" << dec << (int)byte1;
+         infile.read((char*)&ch, 1);
+         trackbytes++;
+         byte2 = ch;
+         out << " '" << dec << (int)byte2;
+         break;
+      case 0xC0:    // patch change: 1 bytes
+         out << " '" << dec << (int)byte1;
+         break;
+      case 0xD0:    // channel pressure: 1 bytes
+         out << " '" << dec << (int)byte1;
+         break;
+      case 0xF0:    // various system bytes: variable bytes
+         switch (command) {
+            case 0xf0:
+               break;
+            case 0xf1:
+               break;
+            case 0xf2:
+               break;
+            case 0xf3:
+               break;
+            case 0xf4:
+               break;
+            case 0xf5:
+               break;
+            case 0xf6:
+               break;
+            case 0xf7:
+               break;
+            case 0xf8:
+               break;
+            case 0xf9:
+               break;
+            case 0xfa:
+               break;
+            case 0xfb:
+               break;
+            case 0xfc:
+               break;
+            case 0xfd:
+               break;
+            case 0xfe:
+               cerr << "Error command no yet handled" << endl;
+               exit(1);
+               break;
+            case 0xff:  // meta message
+               metatype = ch;
+               out << " " << hex << metatype;
+               infile.read((char*)&ch, 1);
+               trackbytes++;
+               count = ch;
+               out << " '" << dec << count;
+               for (i=0; i<count; i++) {
+                  infile.read((char*)&ch, 1);
+                  trackbytes++;
+                  out << " " << hex << (int)ch;
+               }
+               if (metatype == 0x2f) {
+                  return 0;
+               }
+               break;
+               
+         }
+         break;
+   }
+
+   return 1;
+}
+
+
+
+///////////////////////////////
+//
+// getVLV -- read a Variable-Length Value from the file
+//
+
+int getVLV(istream& infile, int& trackbytes) {
+   int output = 0;
+   uchar ch;
+   infile.read((char*)&ch, 1);
+   trackbytes++;
+   output = (output << 7) | (0x7f & ch);
+   while (ch >= 0x80) {
+      infile.read((char*)&ch, 1);
+      trackbytes++;
+      output = (output << 7) | (0x7f & ch);
+   }
+   return output;
+}
+
 
 
 ///////////////////////////////
@@ -441,8 +789,8 @@ void processMidiPitchBendWord(const char* word, int lineNumber, FileIO& out) {
    }
 
    int intval = (int)(((1 << 13)-0.5)  * (value + 1.0) + 0.5);
-   unsigned char LSB = intval & 0x7f;
-   unsigned char MSB = (intval >>  7) & 0x7f;
+   uchar LSB = intval & 0x7f;
+   uchar MSB = (intval >>  7) & 0x7f;
    out << LSB << MSB;
 }
 
@@ -473,9 +821,9 @@ void processVlvWord(const char* word, int lineNumber, FileIO& out) {
            << endl;
       exit(1);
    }
-   unsigned long value = atoi(&word[1]);
+   ulong value = atoi(&word[1]);
 
-   unsigned char byte[5];
+   uchar byte[5];
 
    byte[0] = (value >> 28) & 0x7f;
    byte[1] = (value >> 21) & 0x7f;
