@@ -16,7 +16,7 @@ ARCH =
 ifeq ($(origin OSTYPE), undefined)
    ifeq ($(shell uname),Darwin)
       OSTYPE = OSXPC
-      ENV = MACOSX_DEPLOYMENT_TARGET=10.4
+      ENV = MACOSX_DEPLOYMENT_TARGET=10.7
       # use the following to compile for 32-bit architecture on 64-bit comps:
       # ARCH = -m32 -arch i386
    else 

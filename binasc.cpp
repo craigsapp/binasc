@@ -566,7 +566,8 @@ void outputStyleMidiFile(istream& infile) {
 
 
    // print main content of MIDI file parsing:
-   cout << out << endl;
+   out << ends;
+   cout << out.str() << endl;
 
 }
    
