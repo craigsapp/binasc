@@ -15,6 +15,7 @@ using namespace std;
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <string>
 
 #include <ctype.h>     
 #include <string.h>
@@ -565,7 +566,7 @@ void outputStyleMidiFile(istream& infile) {
 
 
    // print main content of MIDI file parsing:
-   cout << out.str() << endl;
+   cout << out << endl;
 
 }
    
