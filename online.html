@@ -1,0 +1,40 @@
+
+<h1> Binasc Online </h1>
+
+<table width=700><tr><td>
+Drag and drop a file from your desktop into the text area below to generate 
+to display hexadecimal values for bytes in file.
+</td></tr></table>
+
+<textarea id="input" rows=35 cols=90 wrap=on 
+      style='display:block; border:0px solid; outline-width:0; background-color:#f6f3db; font-family: Courier,Courier New,monospace;'></textarea>
+
+<input type="submit" 
+        style="background-color:#d2cfb7; outline-width:0; border-width:0" 
+        name="submit" 
+        onclick="clearTextArea();"
+        value="clear"></td>
+
+<h2>Options</h2>
+<ul> 
+<li> Format: 
+<select onchange="updateFormat();" id="format">
+<option value=0>Binary with commented printable ASCII</option>
+<option value=1>Binary only</option>
+<option value=2>Printable ASCII</option>
+<option value=3>MIDI</option>
+</select>
+<!--
+<li> Bytes per line: <input style="width:50px;" type=number min=1 value=25>
+<li> Column wrap: <input style="width:50px;" type=number min=10 value=75>
+-->
+</ul>
+
+<ul>
+
+<p> A command-line version of binasc can be found <a href=http://code.google.com/p/binasc>here</a>.
+
+<script src="js/binasc-interface.js"></script>
+<script src="js/binasc.js"></script>
+
+
