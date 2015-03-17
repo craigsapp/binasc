@@ -1,0 +1,54 @@
+; Chromatic scale using two channels in separate tracks.  Channel 1 
+; is used for pitches with normal tuning, and channel 2 is used for
+; pitches tuned up a quarter tone.
+
++M +T +h +d	; MIDI file header chunk
+4'6		; number of bytes in header chunk to follow
+2'1		; format (Type-0)
+2'3		; number of tracks (3)
+2'100		; ticks per quarter note
+
+; Track 0: tempo map
++M +T +r +k	; track chunk marker
+4'11		; number of bytes to follow in track chunk
+v0 ff 51 03 3'500000	; tempo: one beat is 500000 microseconds
+00 ff 2f 00
+
+; Track 1: unaltered notes
++M +T +r +k	; track chunk marker
+4'116		; number of bytes to follow in track chunk
+v0   c0 '19	; channel 1 timbre: organ
+v0   e0 p0	; 0% pitch-bend depth for channel 1
+v0   90 '60 '127	v100 90 '60 '0	; Middle C
+v100 90 '61 '127	v100 90 '61 '0	; C sharp (D flat)
+v100 90 '62 '127	v100 90 '62 '0	; D
+v100 90 '63 '127	v100 90 '63 '0	; D sharp
+v100 90 '64 '127	v100 90 '64 '0	; E
+v100 90 '65 '127	v100 90 '65 '0	; F
+v100 90 '66 '127	v100 90 '66 '0	; F sharp
+v100 90 '67 '127	v100 90 '67 '0	; G
+v100 90 '68 '127	v100 90 '68 '0	; G sharp
+v100 90 '69 '127	v100 90 '69 '0	; A
+v100 90 '70 '127	v100 90 '70 '0	; A sharp
+v100 90 '71 '127	v100 90 '71 '0	; B
+v100 90 '72 '127	v200 90 '72 '0	; C
+00 ff 2f 00
+
+; Track 2: quarter-tone notes
++M +T +r +k	; track chunk marker
+4'107		; number of bytes to follow in track chunk
+v0 c1 '19	; channel 2 timbre: organ
+v0 e1 p.25	; 25% pitch-bend depth for channel 2 (50 cents)
+v100 91 '60 '127	v100 91 '60 '0	; C quarter-sharp
+v100 91 '61 '127	v100 91 '61 '0	; C 3/2-sharp (D 1/2-flat)
+v100 91 '62 '127	v100 91 '62 '0	; D 1/2-sharp
+v100 91 '63 '127	v100 91 '63 '0	; D 3/2-sharp
+v100 91 '64 '127	v100 91 '64 '0	; E 1/2-sharp
+v100 91 '65 '127	v100 91 '65 '0	; F 1/2-sharp
+v100 91 '66 '127	v100 91 '66 '0	; F 3/2-sharp
+v100 91 '67 '127	v100 91 '67 '0	; G 1/2-sharp
+v100 91 '68 '127	v100 91 '68 '0	; G 3/2-sharp
+v100 91 '69 '127	v100 91 '69 '0	; A 1/2-sharp
+v100 91 '70 '127	v100 91 '70 '0	; A 3/2-sharp
+v100 91 '71 '127	v100 91 '71 '0	; B 1/2-sharp
+00 ff 2f 00

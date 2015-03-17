@@ -1,0 +1,21 @@
+<!doctype html>
+<!-- vim: set ts=3 : -->
+<html>
+	<head>
+		{% include layout/head.html %}
+	</head>
+	<body>
+		<div class="wrapper">
+			<header>
+				{% include layout/header.html %}
+			</header>
+			<section>
+				{{ content }}
+			</section>
+			<footer>
+				{% include layout/footer.html %}
+			</footer>
+		</div>
+		{% include layout/google.html %}
+	</body>
+</html>

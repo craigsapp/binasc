@@ -1,0 +1,71 @@
+; Iterate through all percussion-track timbres.  General MIDI percussion 
+; timbres are played on channel 10 (number 9 in MIDI command bytes since 
+; the first channel is at number 0.  Unlike regular General MIDI instruments
+; which are selected with the patch change command byte (`c0-cf`), the
+; percussion timbres are located on the dedicated channel #10 (why not #16?).
+; Percussion timbres are selected by pressing a particular key number as
+; illustrated below.  Percussion notes do not need to be turned off
+; like regular timbres, so the note-off is optional.  There are 47 percussion
+; timbres from notes number 35 to 81.
+
++M +T +h +d	; MIDI file header chunk
+4'6		; number of bytes in header chunk to follow
+2'0		; format (Type-0)
+2'1		; number of tracks (1)
+2'100		; ticks per quarter note
+
++M +T +r +k	; track chunk marker
+4'199 		; number of bytes to follow in track chunk
+
+v100 ff 51 03 3'1000000	; tempo: one beat is 1000000 microseconds
+
+v100 99 '35 '100	; Bass Drum 2
+v100 99 '36 '100	; Bass Drum 1
+v100 99 '37 '100	; Side Stick/Rimshot
+v100 99 '38 '100	; Snare Drum 1
+v100 99 '39 '100	; Hand Clap
+v100 99 '40 '100	; Snare Drum 2
+v100 99 '41 '100	; Low Tom 2
+v100 99 '42 '100	; Closed Hi-hat
+v100 99 '43 '100	; Low Tom 1
+v100 99 '44 '100	; Pedal Hi-hat
+v100 99 '45 '100	; Mid Tom 2
+v100 99 '46 '100	; Open Hi-hat
+v100 99 '47 '100	; Mid Tom 1
+v100 99 '48 '100	; High Tom 2
+v100 99 '49 '100	; Crash Cymbal 1
+v100 99 '50 '100	; High Tom 1
+v100 99 '51 '100	; Ride Cymbal 1
+v100 99 '52 '100	; Chinese Cymbal
+v100 99 '53 '100	; Ride Bell
+v100 99 '54 '100	; Tambourine
+v100 99 '55 '100	; Splash Cymbal
+v100 99 '56 '100	; Cowbell
+v100 99 '57 '100	; Crash Cymbal 2
+v100 99 '58 '100	; Vibra Slap
+v100 99 '59 '100	; Ride Cymbal 2
+v100 99 '60 '100	; High Bongo
+v100 99 '61 '100	; Low Bongo
+v100 99 '62 '100	; Mute High Conga
+v100 99 '63 '100	; Open High Conga
+v100 99 '64 '100	; Low Conga
+v100 99 '65 '100	; High Timbale
+v100 99 '66 '100	; Low Timbale
+v100 99 '67 '100	; High Agogô
+v100 99 '68 '100	; Low Agogô
+v100 99 '69 '100	; Cabasa
+v100 99 '70 '100	; Maracas
+v100 99 '71 '100	; Short Whistle
+v100 99 '72 '100	; Long Whistle
+v100 99 '73 '100	; Short Güiro
+v100 99 '74 '100	; Long Güiro
+v100 99 '75 '100	; Claves
+v100 99 '76 '100	; High Wood Block
+v100 99 '77 '100	; Low Wood Block
+v100 99 '78 '100	; Mute Cuíca
+v100 99 '79 '100	; Open Cuíca
+v100 99 '80 '100	; Mute Triangle
+v100 99 '81 '100	; Open Triangle
+
+v100 ff 2f 00
+

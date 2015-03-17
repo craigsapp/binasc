@@ -1,0 +1,178 @@
+; Iterate through all 128 General MIDI timbres.  The timbres are grouped
+; in to 16 sets of 8 timbre groups.  In this example MIDI file, the first
+; timbre set (piano timbres) is played on C3 (octave below middle C).  Then,
+; each successive timbre set is played one step higher until E-flat 4.
+
++M +T +h +d	; MIDI file header chunk
+4'6		; number of bytes in header chunk to follow
+2'0		; format (Type-0)
+2'1		; number of tracks (1)
+2'100		; ticks per quarter note
+
++M +T +r +k	; track chunk marker
+4'1419		; number of bytes to follow in track chunk
+
+v100 ff 51 03 3'1200000	; tempo: one beat is 1200000 microseconds
+
+; Piano timbres
+v50 c0   '0 v0  90 '48 '100   v50 80 '48 '100 ; Acoustic Grand Piano
+v50 c0   '1 v0  90 '48 '100   v50 80 '48 '100 ; Bright Acoustic Piano
+v50 c0   '2 v0  90 '48 '100   v50 80 '48 '100 ; Electric Grand Piano
+v50 c0   '3 v0  90 '48 '100   v50 80 '48 '100 ; Honky-tonk Piano
+v50 c0   '4 v0  90 '48 '100   v50 80 '48 '100 ; Electric Piano 1
+v50 c0   '5 v0  90 '48 '100   v50 80 '48 '100 ; Electric Piano 2
+v50 c0   '6 v0  90 '48 '100   v50 80 '48 '100 ; Harpsichord
+v50 c0   '7 v0  90 '48 '100   v50 80 '48 '100 ; Clavinet
+
+; Chromatic Percussion timbres
+v50 c0   '8 v0  90 '49 '100   v50 80 '49 '100 ; Celesta
+v50 c0   '9 v0  90 '49 '100   v50 80 '49 '100 ; Glockenspiel
+v50 c0  '10 v0  90 '49 '100   v50 80 '49 '100 ; Music Box
+v50 c0  '11 v0  90 '49 '100   v50 80 '49 '100 ; Vibraphone
+v50 c0  '12 v0  90 '49 '100   v50 80 '49 '100 ; Marimba
+v50 c0  '13 v0  90 '49 '100   v50 80 '49 '100 ; Xylophone
+v50 c0  '14 v0  90 '49 '100   v50 80 '49 '100 ; Tubular Bells
+v50 c0  '15 v0  90 '49 '100   v50 80 '49 '100 ; Dulcimer
+
+; Organ timbres
+v50 c0  '16 v0  90 '50 '100   v50 80 '50 '100 ; Drawbar Organ
+v50 c0  '17 v0  90 '50 '100   v50 80 '50 '100 ; Percussive Organ
+v50 c0  '18 v0  90 '50 '100   v50 80 '50 '100 ; Rock Organ
+v50 c0  '19 v0  90 '50 '100   v50 80 '50 '100 ; Church Organ
+v50 c0  '20 v0  90 '50 '100   v50 80 '50 '100 ; Reed Organ
+v50 c0  '21 v0  90 '50 '100   v50 80 '50 '100 ; Accordion
+v50 c0  '22 v0  90 '50 '100   v50 80 '50 '100 ; Harmonica
+v50 c0  '23 v0  90 '50 '100   v50 80 '50 '100 ; Tango Accordion
+
+; Guitar timbres
+v50 c0  '24 v0  90 '51 '100   v50 80 '51 '100 ; Acoustic Guitar (nylon)
+v50 c0  '25 v0  90 '51 '100   v50 80 '51 '100 ; Acoustic Guitar (steel)
+v50 c0  '26 v0  90 '51 '100   v50 80 '51 '100 ; Electric Guitar (jazz)
+v50 c0  '27 v0  90 '51 '100   v50 80 '51 '100 ; Electric Guitar (clean)
+v50 c0  '28 v0  90 '51 '100   v50 80 '51 '100 ; Electric Guitar (muted)
+v50 c0  '29 v0  90 '51 '100   v50 80 '51 '100 ; Overdriven Guitar
+v50 c0  '30 v0  90 '51 '100   v50 80 '51 '100 ; Distortion Guitar
+v50 c0  '31 v0  90 '51 '100   v50 80 '51 '100 ; Guitar Harmonics
+
+; Bass timbres
+v50 c0  '32 v0  90 '52 '100   v50 80 '52 '100 ; Acoustic Bass
+v50 c0  '33 v0  90 '52 '100   v50 80 '52 '100 ; Electric Bass (finger)
+v50 c0  '34 v0  90 '52 '100   v50 80 '52 '100 ; Electric Bass (pick)
+v50 c0  '35 v0  90 '52 '100   v50 80 '52 '100 ; Fretless Bass
+v50 c0  '36 v0  90 '52 '100   v50 80 '52 '100 ; Slap Bass 1
+v50 c0  '37 v0  90 '52 '100   v50 80 '52 '100 ; Slap Bass 2
+v50 c0  '38 v0  90 '52 '100   v50 80 '52 '100 ; Synth Bass 1
+v50 c0  '39 v0  90 '52 '100   v50 80 '52 '100 ; Synth Bass 2
+
+; Strings
+v50 c0  '40 v0  90 '53 '100   v50 80 '53 '100 ; Violin
+v50 c0  '41 v0  90 '53 '100   v50 80 '53 '100 ; Viola
+v50 c0  '42 v0  90 '53 '100   v50 80 '53 '100 ; Cello
+v50 c0  '43 v0  90 '53 '100   v50 80 '53 '100 ; Contrabass
+v50 c0  '44 v0  90 '53 '100   v50 80 '53 '100 ; Tremolo Strings
+v50 c0  '45 v0  90 '53 '100   v50 80 '53 '100 ; Pizzicato Strings
+v50 c0  '46 v0  90 '53 '100   v50 80 '53 '100 ; Orchestral Harp
+v50 c0  '47 v0  90 '53 '100   v50 80 '53 '100 ; Timpani
+
+; Ensemble timbres
+v50 c0  '48 v0  90 '54 '100   v50 80 '54 '100 ; String Ensemble 1
+v50 c0  '49 v0  90 '54 '100   v50 80 '54 '100 ; String Ensemble 2
+v50 c0  '50 v0  90 '54 '100   v50 80 '54 '100 ; Synth Strings 1
+v50 c0  '51 v0  90 '54 '100   v50 80 '54 '100 ; Synth Strings 2
+v50 c0  '52 v0  90 '54 '100   v50 80 '54 '100 ; Choir Aahs
+v50 c0  '53 v0  90 '54 '100   v50 80 '54 '100 ; Voice Oohs
+v50 c0  '54 v0  90 '54 '100   v50 80 '54 '100 ; Synth Choir
+v50 c0  '55 v0  90 '54 '100   v50 80 '54 '100 ; Orchestra Hit
+
+; Brass timbres
+v50 c0  '56 v0  90 '55 '100   v50 80 '55 '100 ; Trumpet
+v50 c0  '57 v0  90 '55 '100   v50 80 '55 '100 ; Trombone
+v50 c0  '58 v0  90 '55 '100   v50 80 '55 '100 ; Tuba
+v50 c0  '59 v0  90 '55 '100   v50 80 '55 '100 ; Muted Trumpet
+v50 c0  '60 v0  90 '55 '100   v50 80 '55 '100 ; French Horn
+v50 c0  '61 v0  90 '55 '100   v50 80 '55 '100 ; Brass Section
+v50 c0  '62 v0  90 '55 '100   v50 80 '55 '100 ; Synth Brass 1
+v50 c0  '63 v0  90 '55 '100   v50 80 '55 '100 ; Synth Brass 2
+
+; Reed timbres
+v50 c0  '64 v0  90 '56 '100   v50 80 '56 '100 ; Soprano Sax
+v50 c0  '65 v0  90 '56 '100   v50 80 '56 '100 ; Alto Sax
+v50 c0  '66 v0  90 '56 '100   v50 80 '56 '100 ; Tenor Sax
+v50 c0  '67 v0  90 '56 '100   v50 80 '56 '100 ; Baritone Sax
+v50 c0  '68 v0  90 '56 '100   v50 80 '56 '100 ; Oboe
+v50 c0  '69 v0  90 '56 '100   v50 80 '56 '100 ; English Horn
+v50 c0  '70 v0  90 '56 '100   v50 80 '56 '100 ; Bassoon
+v50 c0  '71 v0  90 '56 '100   v50 80 '56 '100 ; Clarinet
+
+; Pipe timbres
+v50 c0  '72 v0  90 '57 '100   v50 80 '57 '100 ; Piccolo
+v50 c0  '73 v0  90 '57 '100   v50 80 '57 '100 ; Flute
+v50 c0  '74 v0  90 '57 '100   v50 80 '57 '100 ; Recorder
+v50 c0  '75 v0  90 '57 '100   v50 80 '57 '100 ; Pan Flute
+v50 c0  '76 v0  90 '57 '100   v50 80 '57 '100 ; Blown bottle
+v50 c0  '77 v0  90 '57 '100   v50 80 '57 '100 ; Shakuhachi
+v50 c0  '78 v0  90 '57 '100   v50 80 '57 '100 ; Whistle
+v50 c0  '79 v0  90 '57 '100   v50 80 '57 '100 ; Ocarina
+
+; Synth Lead timbres
+v50 c0  '80 v0  90 '58 '100   v50 80 '58 '100 ; Lead 1 (square)
+v50 c0  '81 v0  90 '58 '100   v50 80 '58 '100 ; Lead 2 (sawtooth)
+v50 c0  '82 v0  90 '58 '100   v50 80 '58 '100 ; Lead 3 (calliope)
+v50 c0  '83 v0  90 '58 '100   v50 80 '58 '100 ; Lead 4 (chiff)
+v50 c0  '84 v0  90 '58 '100   v50 80 '58 '100 ; Lead 5 (charang)
+v50 c0  '85 v0  90 '58 '100   v50 80 '58 '100 ; Lead 6 (voice)
+v50 c0  '86 v0  90 '58 '100   v50 80 '58 '100 ; Lead 7 (fifths)
+v50 c0  '87 v0  90 '58 '100   v50 80 '58 '100 ; Lead 8 (bass + lead)
+ 
+; Synth Pad timbres
+v50 c0  '88 v0  90 '59 '100   v50 80 '59 '100 ; Pad 1 (new age)
+v50 c0  '89 v0  90 '59 '100   v50 80 '59 '100 ; Pad 2 (warm)
+v50 c0  '90 v0  90 '59 '100   v50 80 '59 '100 ; Pad 3 (polysynth)
+v50 c0  '91 v0  90 '59 '100   v50 80 '59 '100 ; Pad 4 (choir)
+v50 c0  '92 v0  90 '59 '100   v50 80 '59 '100 ; Pad 5 (bowed)
+v50 c0  '93 v0  90 '59 '100   v50 80 '59 '100 ; Pad 6 (metallic)
+v50 c0  '94 v0  90 '59 '100   v50 80 '59 '100 ; Pad 7 (halo)
+v50 c0  '95 v0  90 '59 '100   v50 80 '59 '100 ; Pad 8 (sweep)
+
+; Synth Effects timbres
+v50 c0  '96 v0  90 '60 '100   v50 80 '60 '100 ; FX 1 (rain)
+v50 c0  '97 v0  90 '60 '100   v50 80 '60 '100 ; FX 2 (soundtrack)
+v50 c0  '98 v0  90 '60 '100   v50 80 '60 '100 ; FX 3 (crystal)
+v50 c0  '99 v0  90 '60 '100   v50 80 '60 '100 ; FX 4 (atmosphere)
+v50 c0 '100 v0  90 '60 '100   v50 80 '60 '100 ; FX 5 (brightness)
+v50 c0 '101 v0  90 '60 '100   v50 80 '60 '100 ; FX 6 (goblins)
+v50 c0 '102 v0  90 '60 '100   v50 80 '60 '100 ; FX 7 (echoes)
+v50 c0 '103 v0  90 '60 '100   v50 80 '60 '100 ; FX 8 (sci-fi)
+
+; Ethnic timbres
+v50 c0 '104 v0  90 '61 '100   v50 80 '61 '100 ; Sitar
+v50 c0 '105 v0  90 '61 '100   v50 80 '61 '100 ; Banjo
+v50 c0 '106 v0  90 '61 '100   v50 80 '61 '100 ; Shamisen
+v50 c0 '107 v0  90 '61 '100   v50 80 '61 '100 ; Koto
+v50 c0 '108 v0  90 '61 '100   v50 80 '61 '100 ; Kalimba
+v50 c0 '109 v0  90 '61 '100   v50 80 '61 '100 ; Bagpipe
+v50 c0 '110 v0  90 '61 '100   v50 80 '61 '100 ; Fiddle
+v50 c0 '111 v0  90 '61 '100   v50 80 '61 '100 ; Shanai
+
+; Percussive timbres
+v50 c0 '112 v0  90 '62 '100   v50 80 '62 '100 ; Tinkle Bell
+v50 c0 '113 v0  90 '62 '100   v50 80 '62 '100 ; Agogo
+v50 c0 '114 v0  90 '62 '100   v50 80 '62 '100 ; Steel Drums
+v50 c0 '115 v0  90 '62 '100   v50 80 '62 '100 ; Woodblock
+v50 c0 '116 v0  90 '62 '100   v50 80 '62 '100 ; Taiko Drum
+v50 c0 '117 v0  90 '62 '100   v50 80 '62 '100 ; Melodic Tom
+v50 c0 '118 v0  90 '62 '100   v50 80 '62 '100 ; Synth Drum
+v50 c0 '119 v0  90 '62 '100   v50 80 '62 '100 ; Reverse Cymbal
+
+; Sound effects timbres
+v50 c0 '120 v0  90 '63 '100   v50 80 '63 '100 ; Guitar Fret Noise
+v50 c0 '121 v0  90 '63 '100   v50 80 '63 '100 ; Breath Noise
+v50 c0 '122 v0  90 '63 '100   v50 80 '63 '100 ; Seashore
+v50 c0 '123 v0  90 '63 '100   v50 80 '63 '100 ; Bird Tweet
+v50 c0 '124 v0  90 '63 '100   v50 80 '63 '100 ; Telephone Ring
+v50 c0 '125 v0  90 '63 '100   v50 80 '63 '100 ; Helicopter
+v50 c0 '126 v0  90 '63 '100   v50 80 '63 '100 ; Applause
+v50 c0 '127 v0  90 '63 '100   v50 80 '63 '100 ; Gunshot
+
+00 ff 2f 00
+

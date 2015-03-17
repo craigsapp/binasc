@@ -1,0 +1,46 @@
+; a Two-against-three polyrhythmic pattern.  One percussion part plays
+; two strokes per beat while another play three strokes per beat.  In 
+; This Type-0 MIDI file interleaves the parts into a single stream
+; of notes, so it is difficult to see the pattern in the 
+;
+
++M +T +h +d	; MIDI file header chunk marker
+4'6		; byte count in header chunk to follow
+2'0		; file format (Type-0: single track file)
+2'1		; one track in file
+2'6		; ticks per quarter note
+
+
++M +T +r +k	; track chunk marker
+4'223		; byte count in track chunk to follow
+
+v0 ff 51 03 3'1000000	; tempo: one beat is 1000000 microseconds
+
+; Two against three rhythm with voices interleaved in a single track.
+; Pattern repeated ten times. 
+
+; first beat
+v0 99 '47 '100
+v0 99 '48 '100
+v2 99 '47 '100
+v1 99 '48 '100
+v1 99 '47 '100
+
+; nine more beats, one per line
+v2 99 '47 '100 v0 99 '48 '100 v2 99 '47 '100 v1 99 '48 '100 v1 99 '47 '100
+v2 99 '47 '100 v0 99 '48 '100 v2 99 '47 '100 v1 99 '48 '100 v1 99 '47 '100
+v2 99 '47 '100 v0 99 '48 '100 v2 99 '47 '100 v1 99 '48 '100 v1 99 '47 '100
+v2 99 '47 '100 v0 99 '48 '100 v2 99 '47 '100 v1 99 '48 '100 v1 99 '47 '100
+v2 99 '47 '100 v0 99 '48 '100 v2 99 '47 '100 v1 99 '48 '100 v1 99 '47 '100
+v2 99 '47 '100 v0 99 '48 '100 v2 99 '47 '100 v1 99 '48 '100 v1 99 '47 '100
+v2 99 '47 '100 v0 99 '48 '100 v2 99 '47 '100 v1 99 '48 '100 v1 99 '47 '100
+v2 99 '47 '100 v0 99 '48 '100 v2 99 '47 '100 v1 99 '48 '100 v1 99 '47 '100
+v2 99 '47 '100 v0 99 '48 '100 v2 99 '47 '100 v1 99 '48 '100 v1 99 '47 '100
+
+; end at the conjunction of the two patterns on a beat
+v2 99 '47 '100 v0 99 '48 '100
+
+; add a fake note-off to prevent MIDI players from clipping last note
+v6 99 0 0
+v0 ff 2f 00
+

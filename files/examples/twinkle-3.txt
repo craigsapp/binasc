@@ -1,0 +1,55 @@
+; Standard Midi File Header Chunk
++M +T +h +d         ; the Chunk ID
+4'6                 ; the data size of the header chunk data (next three fields)
+; header parameters
+2'0                 ; the format
+2'1                 ; the number of track chunks that follow
+2'128               ; ticks per quarter-note
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Track Chunk
+;
+
++M +T +r +k         ; the Chunk ID
+4'140               ; the data size of the header chunk data
+                    ; (144 bytes to follow)
+
+; track data:
+0                   ; a delta time
+   ff 58 04         ; start of time signature meta event 4 more bytes expected
+   04 02            ; the key signature 4/4  (4 / 2^2)
+   '48              ; 48 clock ticks per quarter note
+   8                ; 8 32nd notes per quarter note
+
+0
+   ff 59 02         ; key signature meta event
+   0                ; no sharps or flats
+   0                ; major key (therefore C major)
+
+; play some notes:
+
+0                   ;
+   90 '60 '40       ; C4 note-on (quarter note)
+81 0                ; delta time (128 ticks) given as a VLV
+   90 '60 0         ; C4 note-off
+
+; variable-length values for delta times below represented in 
+; decimal format by prefixing with "v"
+
+
+v0      90 '60 '30      v128    90 '60 0         ; C4 note on/off
+v0      90 '67 '45      v128    90 '67 0         ; G4 note on/off
+v0      90 '67 '50      v128    90 '67 0         ; G4 note on/off
+v0      90 '69 '45      v128    90 '69 0         ; A4 note on/off
+v0      90 '69 '50      v128    90 '69 0         ; A4 note on/off
+v0      90 '67 '35      v256    90 '67 0         ; G4 note on/off
+v0      90 '65 '50      v128    90 '65 0         ; F4 note on/off
+v0      90 '65 '45      v128    90 '65 0         ; F4 note on/off
+v0      90 '64 '50      v64     90 '64 0         ; E4 note on/off
+v64     90 '64 '40      v64     90 '64 0         ; E4 note on/off
+v64     90 '62 '45      v64     90 '62 0         ; D4 note on/off
+v64     90 '62 '50      v64     90 '62 0         ; D4 note on/off
+v64     90 '60 '30      v256    90 '60 0         ; C4 note on/off
+
+v0      ff 2f 00         ; end-of-track meta event (NOT optional)
