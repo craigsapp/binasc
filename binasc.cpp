@@ -34,6 +34,9 @@ int main(int argc, char* argv[]) {
    binasc.setBytes(options.getBoolean("bytes"));
    binasc.setLineLength(options.getInteger("wrap"));
    binasc.setLineBytes(options.getInteger("mod"));
+   if (!(options.getBoolean("ascii") || options.getBoolean("binary"))) {
+      binasc.setCommentsOn();
+   }
 
    for (int i=0; i<options.getArgCount(); i++) {
       if (options.getBoolean("compile")) {
