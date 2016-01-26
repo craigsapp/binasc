@@ -34,9 +34,15 @@ int main(int argc, char* argv[]) {
    binasc.setBytes(options.getBoolean("bytes"));
    binasc.setLineLength(options.getInteger("wrap"));
    binasc.setLineBytes(options.getInteger("mod"));
-   if (!(options.getBoolean("ascii") || options.getBoolean("binary"))) {
-      binasc.setCommentsOn();
-   }
+   binasc.setCommentsOn();
+   binasc.setBytesOn();
+   if (options.getBoolean("binary")) {
+      binasc.setCommentsOff();
+   } 
+   if (options.getBoolean("ascii")) {
+cout << "SETTING BYTES OFF" << endl;
+      binasc.setBytesOff();
+   } 
 
    for (int i=0; i<options.getArgCount(); i++) {
       if (options.getBoolean("compile")) {
@@ -128,9 +134,9 @@ void checkOptions(Options& opts) {
 
 void example(void) {
    cout <<
-   "# display bytes a hexadecimal values and any associated ascii characters \n"
+   "# display bytes a hexadecimal values and any associated ASCII characters \n"
    "       binasc filename                                                   \n"
-   "# display bytes only as associated ascii characters (suppressing spaces) \n"
+   "# display bytes only as associated ASCII characters (suppressing spaces) \n"
    "       binasc -a filename                                                \n"
    "# display bytes only as hexadecimal values                               \n"
    "       binasc -b filename                                                \n"
@@ -157,9 +163,9 @@ void usage(const string& command) {
    "Usage: " << command << " [-a | -b | -c output] input(s)              \n"
    "                                                                     \n"
    "Options:                                                             \n"
-   "   -a = output only non-space printable asci words                   \n"
-   "   -b = output only hexadecimal ascii numbers for each byte          \n"
-   "   -c output = compiled binary file using ascii number of input      \n"
+   "   -a = output only non-space printable ASCII words                  \n"
+   "   -b = output only hexadecimal ASCII numbers for each byte          \n"
+   "   -c output = compiled binary file using ASCII number of input      \n"
    "   -m = display the man page for the program                         \n"
    "   no options = combination of -a and -b options.                    \n"
    "   --options  = list of all options, aliases and defaults            \n"
@@ -181,7 +187,7 @@ cout <<
 "\n"
 "The binasc program can convert a file into an ASCII list of hexadecimal\n"
 "numbers which represent each byte in the input file as well as\n"
-"display any printable ascii characters associated with the hexadecimal\n"
+"display any printable ASCII characters associated with the hexadecimal\n"
 "numbers. Example output given below shows beginning of the output from\n"
 "the binasc program when it is run on the binasc program file. Note that\n"
 "the lines come in pairs, first the line describing the bytes, then a\n"
@@ -222,7 +228,7 @@ cout <<
 "displaying only ASCII printable bytes, and -b for displaying only the\n"
 "hexadecimal numbers for the bytes.\n"
 "\n"
-"the -a option will display only the ascii-printable characters in a\n"
+"the -a option will display only the ASCII-printable characters in a\n"
 "file. Multiple spaces (unprintable characters) are suppressed in the\n"
 "output. The -a option is a good way to search for text in a binary\n"
 "file. Here is an example output using the same file as in the example\n"
@@ -266,7 +272,7 @@ cout <<
 "\n"
 "2. Creating files by byte description\n"
 "\n"
-"With the binasc program, you can convert an ascii file with the binary\n"
+"With the binasc program, you can convert an ASCII file with the binary\n"
 "numbers back into actual bytes by using the -c option. When using the -c\n"
 "option, you must specify an output file with the -o option. Byte numbers\n"
 "can be of various formats as described below.\n"

@@ -138,7 +138,7 @@ int Binasc::getComments(void) {
 //
 
 void Binasc::setBytes(int state) {
-   commentsQ = state ? 1 : 0;
+   bytesQ = state ? 1 : 0;
 }
 
 
@@ -508,6 +508,8 @@ int Binasc::processLine(ostream& out, char* inputLine, int lineCount) {
          status = processVlvWord(out, word, lineCount);
       } else if (word[0] == 'p') {
          status = processMidiPitchBendWord(out, word, lineCount);
+      } else if (word[0] == 't') {
+         status = processMidiTempoWord(out, word, lineCount);
       } else if (strchr(word, '\'')) {
          status = processDecimalWord(out, word, lineCount);
       } else if (strchr(word, ',') || strlen(word) > 2) {
@@ -1366,6 +1368,44 @@ int Binasc::processVlvWord(ostream& out, const char* word, int lineNum) {
       }
    }
 
+   return 1;
+}
+
+
+
+////////////////////////////
+//
+// Binasc::processMidiTempoWord -- convert a floating point tempo into
+//   a three-byte number of microseconds per beat per minute value.
+//
+
+int Binasc::processMidiTempoWord(ostream& out, const char* word, 
+      int lineNum) {
+   if (strlen(word) < 2) {
+      cerr << "Error on line: " << lineNum
+           << ": 't' needs to be followed immediately by "
+           << "a floating-point number" << endl;
+      return 0;
+   }
+   if (!(isdigit(word[1]) || word[1] == '.' || word[1] == '-'
+         || word[1] == '+')) {
+      cerr << "Error on line: " << lineNum
+           << ": 't' needs to be followed immediately by "
+           << "a floating-point number" << endl;
+      return 0;
+   }
+   double value = strtod(&word[1], NULL);
+
+   if (value < 0.0) {
+      value = -value;
+   }
+
+   int intval = int(60.0 * 1000000.0 / value + 0.5);
+
+   uchar byte0 = intval & 0xff;
+   uchar byte1 = (intval >>  8) & 0xff;
+   uchar byte2 = (intval >> 16) & 0xff;
+   out << byte2 << byte1 << byte0;
    return 1;
 }
 
