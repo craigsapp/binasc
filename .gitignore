@@ -1,5 +1,8 @@
 binasc
 ^binasc.exe$
+.mid
+.txt
+.bak
 
 .*
 !.gitignore
