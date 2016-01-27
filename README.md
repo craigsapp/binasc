@@ -26,7 +26,7 @@ to 50 printable characters per line.
 The -m option will print a man page to standard output.
 
 The -c option will compile the byte codes into a binary file.  Usage:
-   binasc -c binary-file text-file
+   ```binasc -c binary-file text-file```
 Where text-file contains the byte codes in a text file.
 
 For more information see http://binasc.sapp.org (still needs cleanup 
