@@ -41,7 +41,8 @@ Online
 
 An online version of the binasc program can be found at:
     http://www.ccarh.org/software/binasc
-You can drag files into the textarea on that page to convert the file to hex codes.
+You can drag files into the textarea on that page to convert the file 
+to hex codes.
 
 
 
