@@ -38,15 +38,21 @@ int main(int argc, char* argv[]) {
    binasc.setBytesOn();
    if (options.getBoolean("binary")) {
       binasc.setCommentsOff();
-   } 
+   }
    if (options.getBoolean("ascii")) {
-cout << "SETTING BYTES OFF" << endl;
       binasc.setBytesOff();
-   } 
+   }
+   if (options.getBoolean("midi")) {
+      binasc.setMidiOn();
+      binasc.setCommentsOff();
+   } else if (options.getBoolean("MIDI")) {
+      binasc.setMidiOn();
+      binasc.setCommentsOn();
+   }
 
    for (int i=0; i<options.getArgCount(); i++) {
       if (options.getBoolean("compile")) {
-         binasc.writeToBinary(options.getString("compile").data(), 
+         binasc.writeToBinary(options.getString("compile").data(),
                options.getArg(i+1).data());
       } else  {
          binasc.readFromBinary(cout, options.getArg(i+1).data());
@@ -69,7 +75,9 @@ void checkOptions(Options& opts) {
    opts.define("a|ascii=b",       "Display only printable ASCII characters."  );
    opts.define("b|binary|bytes=b","Display only byte hex codes."              );
    opts.define("c|compile=s:",    "Compile ASCII file into binary form."      );
-   opts.define("m|man|manual=b",  "Print the manual."                         );
+   opts.define("h|man|manual=b",  "Print the manual."                         );
+   opts.define("m|midi=b",        "Display MIDI files in ASCII form."         );
+   opts.define("M|MIDI=b",        "Display MIDI files with comments."         );
    opts.define("mod=i:25",        "Number of hex codes on a line."            );
    opts.define("wrap=i:75",       "Number of characters on line for -a option");
    opts.define("author=b",        "Author of the program."                    );
@@ -110,7 +118,7 @@ void checkOptions(Options& opts) {
    }
 
 
-   if (opts.getBoolean("compile") && 
+   if (opts.getBoolean("compile") &&
       strlen(opts.getString("compile").data()) == 0) {
       cerr << "Error: you must specify an output file when using the -c option"
            << endl;
