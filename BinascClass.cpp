@@ -577,7 +577,6 @@ int Binasc::readMidiEvent(ostream& out, istream& infile, int& trackbytes,
       trackbytes++;
    }
    byte1 = ch;
-   int count;
    int i;
    int metatype = 0;
    switch (command & 0xf0) {
