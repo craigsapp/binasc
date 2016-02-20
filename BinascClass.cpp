@@ -497,7 +497,7 @@ int Binasc::outputStyleBoth(ostream& out, istream& input) {
 int Binasc::processLine(ostream& out, const string& input, int lineCount) {
    int status = 1;
    int i = 0;
-   int length = input.size();
+   int length = (int)input.size();
    string word;
    while (i<length) {
       if ((input[i] == ';') || (input[i] == '#') || (input[i] == '/')) {
@@ -568,7 +568,7 @@ int Binasc::getWord(string& word, const string& input,
             break;
          }
       }
-      if (escape && (i<input.size()-1) && (input[i] == '\\')
+      if (escape && (i<(int)input.size()-1) && (input[i] == '\\')
             && (input[i+1] == '"')) {
          word.push_back(input[i+1]);
          i += 2;
@@ -1136,7 +1136,7 @@ int Binasc::outputStyleMidi(ostream& out, istream& input) {
 //
 
 int Binasc::processDecimalWord(ostream& out, const string& word, int lineNum) {
-   int length = word.size();        // length of ascii binary number
+   int length = (int)word.size();        // length of ascii binary number
    int byteCount = -1;              // number of bytes to output
    int quoteIndex = -1;             // index of decimal specifier
    int signIndex = -1;              // index of any sign for number
@@ -1425,7 +1425,7 @@ int Binasc::processDecimalWord(ostream& out, const string& word, int lineNum) {
 //
 
 int Binasc::processHexWord(ostream& out, const string& word, int lineNum) {
-   int length = word.size();
+   int length = (int)word.size();
    uchar outputByte;
 
    if (length > 2) {
@@ -1467,7 +1467,7 @@ int Binasc::processStringWord(ostream& out, const string& word, int lineNum) {
 //
 
 int Binasc::processAsciiWord(ostream& out, const string& word, int lineNum) {
-   int length = word.size();
+   int length = (int)word.size();
    uchar outputByte;
 
    if (word[0] != '+') {
@@ -1501,7 +1501,7 @@ int Binasc::processAsciiWord(ostream& out, const string& word, int lineNum) {
 //
 
 int Binasc::processBinaryWord(ostream& out, const string& word, int lineNum) {
-   int length = word.size();        // length of ascii binary number
+   int length = (int)word.size();        // length of ascii binary number
    int commaIndex = -1;             // index location of comma in number
    int leftDigits = -1;             // number of digits to left of comma
    int rightDigits = -1;            // number of digits to right of comma
