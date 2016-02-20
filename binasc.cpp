@@ -119,7 +119,7 @@ void checkOptions(Options& opts) {
 
 
    if (opts.getBoolean("compile") &&
-      strlen(opts.getString("compile").data()) == 0) {
+      (opts.getString("compile").size() == 0)) {
       cerr << "Error: you must specify an output file when using the -c option"
            << endl;
       exit(1);
