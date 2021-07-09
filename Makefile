@@ -56,11 +56,11 @@ all:
 
 
 install:
-	cp binasc /usr/local/bin
-
-
-sudo-install:
 	sudo cp binasc /usr/local/bin
+
+
+no-sudo-install:
+	cp binasc /usr/local/bin
 
 
 clean:
