@@ -11,6 +11,7 @@
 
 #include "Binasc.h"
 #include <sstream>
+#include <iostream>
 #include <string.h>
 
 //////////////////////////////
@@ -203,6 +204,7 @@ int Binasc::getMidi(void) {
 //
 
 int Binasc::writeToBinary(const string& outfile, const string& infile) {
+   
    ifstream input;
    input.open(infile.c_str());
    if (!input.is_open()) {
@@ -210,16 +212,22 @@ int Binasc::writeToBinary(const string& outfile, const string& infile) {
       return 0;
    }
 
-   ofstream output;
-   output.open(outfile.c_str());
-   if (!output.is_open()) {
-      cerr << "Cannot open " << outfile << " for reading in binasc." << endl;
-      return 0;
+   int status = 0;
+   if (outfile == "-") {
+      status = writeToBinary(std::cout, input);
+      input.close();
+   } else {
+      ofstream output;
+      output.open(outfile.c_str());
+      if (!output.is_open()) {
+         cerr << "Cannot open " << outfile << " for reading in binasc." << endl;
+         return 0;
+      }
+      status = writeToBinary(output, input);
+      input.close();
+      output.close();
    }
 
-   int status = writeToBinary(output, input);
-   input.close();
-   output.close();
    return status;
 }
 
@@ -695,7 +703,13 @@ int Binasc::readMidiEvent(ostream& out, istream& infile, int& trackbytes,
          byte2 = ch;
          output << " '" << dec << (int)byte2;
          if (commentsQ) {
-            comment += "pitch-bend";
+            int value = (byte2 << 7) | byte1;
+            double rvalue = (double)value / 8192 - 1.0;
+            comment += "pitch-bend ";
+            comment += to_string(value);
+            comment += "(";
+            comment += to_string(rvalue);
+            comment += ")";
          }
          break;
       case 0xC0:    // patch change: 1 bytes
