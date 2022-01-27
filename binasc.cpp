@@ -50,12 +50,11 @@ int main(int argc, char* argv[]) {
       binasc.setCommentsOn();
    }
 
-   for (int i=0; i<options.getArgCount(); i++) {
-      if (options.getBoolean("compile")) {
-         binasc.writeToBinary(options.getString("compile").data(),
-               options.getArg(i+1).data());
-      } else  {
-         binasc.readFromBinary(cout, options.getArg(i+1).data());
+   if (options.getBoolean("pipe")) {
+      binasc.writeToBinary("-", "-");
+   } else {
+      for (int i=0; i<options.getArgCount(); i++) {
+         binasc.readFromBinary(cout, options.getArg(i+1));
       }
    }
 
@@ -80,6 +79,7 @@ void checkOptions(Options& opts) {
    opts.define("M|MIDI=b",        "Display MIDI files with comments."         );
    opts.define("mod=i:25",        "Number of hex codes on a line."            );
    opts.define("wrap=i:75",       "Number of characters on line for -a option");
+   opts.define("p|pipe=b",        "Use stdin and stdout."                     );
    opts.define("author=b",        "Author of the program."                    );
    opts.define("version=b",       "Version of the program."                   );
    opts.define("example=b",       "Example usage of the program."             );
@@ -90,7 +90,7 @@ void checkOptions(Options& opts) {
          opts.getBoolean("c") > 1) {
       cerr << "Error: only one of the opts -a, -b, or -c can be used"
               "at one time." << endl;
-      usage(opts.getCommand().data());
+      usage(opts.getCommand());
       exit(1);
    }
 
@@ -105,7 +105,7 @@ void checkOptions(Options& opts) {
       exit(0);
    }
    if (opts.getBoolean("help")) {
-      usage(opts.getCommand().data());
+      usage(opts.getCommand());
       exit(0);
    }
    if (opts.getBoolean("example")) {
@@ -118,17 +118,21 @@ void checkOptions(Options& opts) {
    }
 
 
-   if (opts.getBoolean("compile") &&
+   if (opts.getBoolean("pipe")) {
+      // no standard input/output (ignore filenames for compiling and input names).
+   } else if (opts.getBoolean("compile") &&
       (opts.getString("compile").size() == 0)) {
       cerr << "Error: you must specify an output file when using the -c option"
            << endl;
       exit(1);
    }
 
-   if (opts.getArgCount() < 1) {
+   if (opts.getBoolean("pipe")) {
+      // no standard input/output (ignore filenames for compiling and input names).
+   } else if (opts.getArgCount() < 1) {
       cerr << "Error: you must specify at least one file on the command-line"
            << endl;
-      usage(opts.getCommand().data());
+      usage(opts.getCommand());
       exit(1);
    }
 }

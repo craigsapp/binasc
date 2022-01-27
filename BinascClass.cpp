@@ -204,23 +204,23 @@ int Binasc::getMidi(void) {
 //
 
 int Binasc::writeToBinary(const string& outfile, const string& infile) {
-   
-   ifstream input;
-   input.open(infile.c_str());
-   if (!input.is_open()) {
-      cerr << "Cannot open " << infile << " for reading in binasc." << endl;
-      return 0;
-   }
 
    int status = 0;
-   if (outfile == "-") {
-      status = writeToBinary(std::cout, input);
-      input.close();
+   if ((infile == "-") && (outfile == "-")) {
+      // case for both input and output from stdin/out.
+      status = writeToBinary(std::cout, std::cin);
    } else {
+      ifstream input;
+      input.open(infile.c_str());
+      if (!input.is_open()) {
+         cerr << "Cannot open " << infile << " for reading in binasc." << endl;
+         return 0;
+      }
+
       ofstream output;
       output.open(outfile.c_str());
       if (!output.is_open()) {
-         cerr << "Cannot open " << outfile << " for reading in binasc." << endl;
+         cerr << "Cannot open2 " << outfile << " for reading in binasc." << endl;
          return 0;
       }
       status = writeToBinary(output, input);
@@ -236,7 +236,7 @@ int Binasc::writeToBinary(const string& outfile, istream& input) {
    ofstream output;
    output.open(outfile.c_str());
    if (!output.is_open()) {
-      cerr << "Cannot open " << outfile << " for reading in binasc." << endl;
+      cerr << "Cannot open3 " << outfile << " for reading in binasc." << endl;
       return 0;
    }
 
@@ -250,7 +250,7 @@ int Binasc::writeToBinary(ostream& out, const string& infile) {
    ifstream input;
    input.open(infile.c_str());
    if (!input.is_open()) {
-      cerr << "Cannot open " << infile << " for reading in binasc." << endl;
+      cerr << "Cannot open3 " << infile << " for reading in binasc." << endl;
       return 0;
    }
 
@@ -286,14 +286,14 @@ int Binasc::readFromBinary(const string& outfile, const string& infile) {
    ifstream input;
    input.open(infile.c_str());
    if (!input.is_open()) {
-      cerr << "Cannot open " << infile << " for reading in binasc." << endl;
+      cerr << "Cannot open5 " << infile << " for reading in binasc." << endl;
       return 0;
    }
 
    ofstream output;
    output.open(outfile.c_str());
    if (!output.is_open()) {
-      cerr << "Cannot open " << outfile << " for reading in binasc." << endl;
+      cerr << "Cannot open6 " << outfile << " for reading in binasc." << endl;
       return 0;
    }
 
@@ -308,7 +308,7 @@ int Binasc::readFromBinary(const string& outfile, istream& input) {
    ofstream output;
    output.open(outfile.c_str());
    if (!output.is_open()) {
-      cerr << "Cannot open " << outfile << " for reading in binasc." << endl;
+      cerr << "Cannot open7 " << outfile << " for reading in binasc." << endl;
       return 0;
    }
 
@@ -322,7 +322,7 @@ int Binasc::readFromBinary(ostream& out, const string& infile) {
    ifstream input;
    input.open(infile.c_str());
    if (!input.is_open()) {
-      cerr << "Cannot open " << infile << " for reading in binasc." << endl;
+      cerr << "Cannot open8 " << infile << " for reading in binasc." << endl;
       return 0;
    }
 
