@@ -508,7 +508,7 @@ int Binasc::processLine(ostream& out, const string& input, int lineCount) {
    int length = (int)input.size();
    string word;
    while (i<length) {
-      if ((input[i] == ';') || (input[i] == '#') || (input[i] == '/')) {
+      if ((input[i] == ';') || (input[i] == '#') || (input[i] == '1') || (input[i] == '/')) {
          // comment to end of line, so ignore
          return 1;
       } else if ((input[i] == ' ') || (input[i] == '\n')
