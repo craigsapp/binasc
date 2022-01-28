@@ -1,7 +1,7 @@
 //
 // Programmer:    Craig Stuart Sapp <craig@ccrma.stanford.edu>
 // Creation Date: Wed Feb 18 14:45:32 PST 2015 Class-ified binasc functionality
-// Last Modified: Wed Feb 18 14:45:44 PST 2015
+// Last Modified: Thu 27 Jan 2022 08:40:23 PM PST
 // Filename:      midifile/src-programs/binasc.cpp
 // Syntax:        C++11
 // vim:           ts=3 expandtab
@@ -27,38 +27,43 @@ void     manual            (void);
 ///////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char* argv[]) {
-   options.setOptions(argc, argv);
-   checkOptions(options);
+	options.setOptions(argc, argv);
+	checkOptions(options);
 
-   Binasc binasc;
-   binasc.setBytes(options.getBoolean("bytes"));
-   binasc.setLineLength(options.getInteger("wrap"));
-   binasc.setLineBytes(options.getInteger("mod"));
-   binasc.setCommentsOn();
-   binasc.setBytesOn();
-   if (options.getBoolean("binary")) {
-      binasc.setCommentsOff();
-   }
-   if (options.getBoolean("ascii")) {
-      binasc.setBytesOff();
-   }
-   if (options.getBoolean("midi")) {
-      binasc.setMidiOn();
-      binasc.setCommentsOff();
-   } else if (options.getBoolean("MIDI")) {
-      binasc.setMidiOn();
-      binasc.setCommentsOn();
-   }
+	Binasc binasc;
+	binasc.setBytes(options.getBoolean("bytes"));
+	binasc.setLineLength(options.getInteger("wrap"));
+	binasc.setLineBytes(options.getInteger("mod"));
+	binasc.setCommentsOn();
+	binasc.setBytesOn();
+	if (options.getBoolean("binary")) {
+		binasc.setCommentsOff();
+	}
+	if (options.getBoolean("ascii")) {
+		binasc.setBytesOff();
+	}
+	if (options.getBoolean("midi")) {
+		binasc.setMidiOn();
+		binasc.setCommentsOff();
+	} else if (options.getBoolean("MIDI")) {
+		binasc.setMidiOn();
+		binasc.setCommentsOn();
+	}
 
-   if (options.getBoolean("pipe")) {
-      binasc.writeToBinary("-", "-");
-   } else {
+	if (options.getBoolean("pipe")) {
+		binasc.writeToBinary("-", "-");
+	} else {
       for (int i=0; i<options.getArgCount(); i++) {
-         binasc.readFromBinary(cout, options.getArg(i+1));
+         if (options.getBoolean("compile")) {
+            binasc.writeToBinary(options.getString("compile").data(),
+                  options.getArg(i+1).data());
+         } else  {
+            binasc.readFromBinary(cout, options.getArg(i+1).data());
+         }
       }
    }
 
-   return 0;
+	return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -71,70 +76,70 @@ int main(int argc, char* argv[]) {
 //
 
 void checkOptions(Options& opts) {
-   opts.define("a|ascii=b",       "Display only printable ASCII characters."  );
-   opts.define("b|binary|bytes=b","Display only byte hex codes."              );
-   opts.define("c|compile=s:",    "Compile ASCII file into binary form."      );
-   opts.define("h|man|manual=b",  "Print the manual."                         );
-   opts.define("m|midi=b",        "Display MIDI files in ASCII form."         );
-   opts.define("M|MIDI=b",        "Display MIDI files with comments."         );
-   opts.define("mod=i:25",        "Number of hex codes on a line."            );
-   opts.define("wrap=i:75",       "Number of characters on line for -a option");
-   opts.define("p|pipe=b",        "Use stdin and stdout."                     );
-   opts.define("author=b",        "Author of the program."                    );
-   opts.define("version=b",       "Version of the program."                   );
-   opts.define("example=b",       "Example usage of the program."             );
-   opts.define("help=b");
-   opts.process();
+	opts.define("a|ascii=b",       "Display only printable ASCII characters."  );
+	opts.define("b|binary|bytes=b","Display only byte hex codes."              );
+	opts.define("c|compile=s:",    "Compile ASCII file into binary form."      );
+	opts.define("h|man|manual=b",  "Print the manual."                         );
+	opts.define("m|midi=b",        "Display MIDI files in ASCII form."         );
+	opts.define("M|MIDI=b",        "Display MIDI files with comments."         );
+	opts.define("mod=i:25",        "Number of hex codes on a line."            );
+	opts.define("wrap=i:75",       "Number of characters on line for -a option");
+	opts.define("p|pipe=b",        "Use stdin and stdout."                     );
+	opts.define("author=b",        "Author of the program."                    );
+	opts.define("version=b",       "Version of the program."                   );
+	opts.define("example=b",       "Example usage of the program."             );
+	opts.define("help=b");
+	opts.process();
 
-   if (opts.getBoolean("a") + opts.getBoolean("b") +
-         opts.getBoolean("c") > 1) {
-      cerr << "Error: only one of the opts -a, -b, or -c can be used"
-              "at one time." << endl;
-      usage(opts.getCommand());
-      exit(1);
-   }
+	if (opts.getBoolean("a") + opts.getBoolean("b") +
+			opts.getBoolean("c") > 1) {
+		cerr << "Error: only one of the opts -a, -b, or -c can be used"
+				  "at one time." << endl;
+		usage(opts.getCommand());
+		exit(1);
+	}
 
-   if (opts.getBoolean("author")) {
-      cout << "Written by Craig Stuart Sapp, "
-           << "craig@ccrma.stanford.edu, April 1997" << endl;
-      exit(0);
-   }
-   if (opts.getBoolean("version")) {
-      cout << "last edited: Wed Feb 18 15:48:05 PST 2015" << endl;
-      cout << "compiled:    " << __DATE__ << endl;
-      exit(0);
-   }
-   if (opts.getBoolean("help")) {
-      usage(opts.getCommand());
-      exit(0);
-   }
-   if (opts.getBoolean("example")) {
-      example();
-      exit(0);
-   }
-   if (opts.getBoolean("manual")) {
-      manual();
-      exit(0);
-   }
+	if (opts.getBoolean("author")) {
+		cout << "Written by Craig Stuart Sapp, "
+			  << "craig@ccrma.stanford.edu, April 1997" << endl;
+		exit(0);
+	}
+	if (opts.getBoolean("version")) {
+		cout << "last edited: Wed Feb 18 15:48:05 PST 2015" << endl;
+		cout << "compiled:    " << __DATE__ << endl;
+		exit(0);
+	}
+	if (opts.getBoolean("help")) {
+		usage(opts.getCommand());
+		exit(0);
+	}
+	if (opts.getBoolean("example")) {
+		example();
+		exit(0);
+	}
+	if (opts.getBoolean("manual")) {
+		manual();
+		exit(0);
+	}
 
 
-   if (opts.getBoolean("pipe")) {
-      // no standard input/output (ignore filenames for compiling and input names).
-   } else if (opts.getBoolean("compile") &&
-      (opts.getString("compile").size() == 0)) {
-      cerr << "Error: you must specify an output file when using the -c option"
-           << endl;
-      exit(1);
-   }
+	if (opts.getBoolean("pipe")) {
+		// no standard input/output (ignore filenames for compiling and input names).
+	} else if (opts.getBoolean("compile") &&
+		(opts.getString("compile").size() == 0)) {
+		cerr << "Error: you must specify an output file when using the -c option"
+			  << endl;
+		exit(1);
+	}
 
-   if (opts.getBoolean("pipe")) {
-      // no standard input/output (ignore filenames for compiling and input names).
-   } else if (opts.getArgCount() < 1) {
-      cerr << "Error: you must specify at least one file on the command-line"
-           << endl;
-      usage(opts.getCommand());
-      exit(1);
-   }
+	if (opts.getBoolean("pipe")) {
+		// no standard input/output (ignore filenames for compiling and input names).
+	} else if (opts.getArgCount() < 1) {
+		cerr << "Error: you must specify at least one file on the command-line"
+			  << endl;
+		usage(opts.getCommand());
+		exit(1);
+	}
 }
 
 
@@ -145,16 +150,16 @@ void checkOptions(Options& opts) {
 //
 
 void example(void) {
-   cout <<
-   "# display bytes a hexadecimal values and any associated ASCII characters \n"
-   "       binasc filename                                                   \n"
-   "# display bytes only as associated ASCII characters (suppressing spaces) \n"
-   "       binasc -a filename                                                \n"
-   "# display bytes only as hexadecimal values                               \n"
-   "       binasc -b filename                                                \n"
-   "# compile the numeric values of the input into bytes in output           \n"
-   "       binasc -c filename                                                \n"
-   << endl;
+	cout <<
+	"# display bytes a hexadecimal values and any associated ASCII characters \n"
+	"       binasc filename                                                   \n"
+	"# display bytes only as associated ASCII characters (suppressing spaces) \n"
+	"       binasc -a filename                                                \n"
+	"# display bytes only as hexadecimal values                               \n"
+	"       binasc -b filename                                                \n"
+	"# compile the numeric values of the input into bytes in output           \n"
+	"       binasc -c filename                                                \n"
+	<< endl;
 }
 
 
@@ -167,21 +172,21 @@ void example(void) {
 //
 
 void usage(const string& command) {
-   cout <<
-   "                                                                     \n"
-   "For converting/compiling a binary file to/from an ASCII listing of   \n"
-   "individual bytes of the file.                                        \n"
-   "                                                                     \n"
-   "Usage: " << command << " [-a | -b | -c output] input(s)              \n"
-   "                                                                     \n"
-   "Options:                                                             \n"
-   "   -a = output only non-space printable ASCII words                  \n"
-   "   -b = output only hexadecimal ASCII numbers for each byte          \n"
-   "   -c output = compiled binary file using ASCII number of input      \n"
-   "   -m = display the man page for the program                         \n"
-   "   no options = combination of -a and -b options.                    \n"
-   "   --options  = list of all options, aliases and defaults            \n"
-   << endl;
+	cout <<
+	"                                                                     \n"
+	"For converting/compiling a binary file to/from an ASCII listing of   \n"
+	"individual bytes of the file.                                        \n"
+	"                                                                     \n"
+	"Usage: " << command << " [-a | -b | -c output] input(s)              \n"
+	"                                                                     \n"
+	"Options:                                                             \n"
+	"   -a = output only non-space printable ASCII words                  \n"
+	"   -b = output only hexadecimal ASCII numbers for each byte          \n"
+	"   -c output = compiled binary file using ASCII number of input      \n"
+	"   -m = display the man page for the program                         \n"
+	"   no options = combination of -a and -b options.                    \n"
+	"   --options  = list of all options, aliases and defaults            \n"
+	<< endl;
 }
 
 
